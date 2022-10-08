@@ -8,10 +8,7 @@ namespace app\core;
 
 class Router {
     public Request $request;
-    protected array $routes = [
-        'get' => [],
-        'post' => [],
-    ];
+    protected array $routes = [];
 
     /**
      * @param Request $request
@@ -20,16 +17,18 @@ class Router {
         $this->request = $request;
     }
 
-
     public function get($path, $callback) {
         $this->routes['get'][$path] = $callback;
     }
 
     public function resolve() {
         $path = $this->request->getPath();
-        echo '<pre>';
-        var_dump($path);
-        echo '</pre>';
-        exit;
+        $method = $this->request->getMethod();
+        $callback = $this->routes[$method][$path] ?? false;
+        if (!$callback) {
+            echo "Not found";
+            exit;
+        }
+        echo call_user_func($callback);
     }
 }
